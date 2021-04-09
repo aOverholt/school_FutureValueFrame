@@ -25,17 +25,32 @@ public class FutureValueFrame extends JFrame {
     private JTextField interestRateField;
     private JTextField yearsField;
     private JTextField futureValueField;
-    
-    // Declare error labels
-    private JLabel investmentErrorLabel = new JLabel("");
-    private JLabel interestRateErrorLabel = new JLabel("");
-    private JLabel yearsErrorLabel = new JLabel("");
 
+    // Declare error labels
+    private JLabel investmentErrorLabel;
+    private JLabel interestRateErrorLabel;
+    private JLabel yearsErrorLabel;
+    
+    // Declare Buttons
+    private JButton calculateButton;
+    private JButton exitButton;
+    
+    // Declare Panels
+    private JPanel buttonPanel;
+    private JPanel panel;
+
+    // Declare dim 
+    Dimension dim;
+    
+    
+    // New validation object
+    Validation v = new Validation();
     
     public FutureValueFrame() {
         initComponents();
     }
 
+    
     private void initComponents() {
         try {
             UIManager.setLookAndFeel(
@@ -45,6 +60,8 @@ public class FutureValueFrame extends JFrame {
             System.out.println(e);
         }
 
+        dim = new Dimension(150, 20);
+        
         setTitle("Future Value Calculator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationByPlatform(true);
@@ -55,12 +72,20 @@ public class FutureValueFrame extends JFrame {
         yearsField = new JTextField();
         futureValueField = new JTextField();
 
+        // Initialize error labels
+        investmentErrorLabel = new JLabel("");
+        interestRateErrorLabel = new JLabel("");
+        yearsErrorLabel = new JLabel("");
 
+        // initialize the Buttons
+        calculateButton = new JButton("Calculate");
+        exitButton = new JButton("Exit");
+
+        
         // Make so the future value field cannot be tampered with
         futureValueField.setEditable(false);
 
         // Set the dimensions of the text fields to prevent collapse
-        Dimension dim = new Dimension(150, 20);
         investmentField.setPreferredSize(dim);
         interestRateField.setPreferredSize(dim);
         yearsField.setPreferredSize(dim);
@@ -70,22 +95,18 @@ public class FutureValueFrame extends JFrame {
         yearsField.setMinimumSize(dim);
         futureValueField.setMinimumSize(dim);
 
-        // initialize the Buttons
-        JButton calculateButton = new JButton("Calculate");
-        JButton exitButton = new JButton("Exit");
-
         // Set button click listeners and point them at the appropriate methods
         calculateButton.addActionListener(e -> calculateButtonClicked());
         exitButton.addActionListener(e -> exitButtonClicked());
 
         //Set up button panel and add the buttons to it
-        JPanel buttonPanel = new JPanel();
+        buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.add(calculateButton);
         buttonPanel.add(exitButton);
 
         // Set up the main panel and add the Labels and Fields to it
-        JPanel panel = new JPanel();
+        panel = new JPanel();
         panel.setLayout(new GridBagLayout());
         panel.add(new JLabel("Monthly Investment:"), getConstraints(0, 0));
         panel.add(investmentField, getConstraints(1, 0));
@@ -122,18 +143,16 @@ public class FutureValueFrame extends JFrame {
         investmentErrorLabel.setText("");
         interestRateErrorLabel.setText("");
         yearsErrorLabel.setText("");
-        
-        // New validation object
-        Validation v = new Validation();
-        
+
+
         // If all data checks out, perform calculations
-        if (v.isDouble(investmentField.getText(), "Monthly Investment").equals("") &&
-            v.isDouble(interestRateField.getText(), "Yearly Interest Rate").equals("") &&
-            v.isInteger(yearsField.getText(), "Years").equals("")) {
-            
+        if (v.isDouble(investmentField.getText(), "Monthly Investment").equals("")
+                && v.isDouble(interestRateField.getText(), "Yearly Interest Rate").equals("")
+                && v.isInteger(yearsField.getText(), "Years").equals("")) {
+
             // Reset frame size
             setSize(new Dimension(320, 180));
-            
+
             // Collect input, perform calculation, and display result
             double investment = Double.parseDouble(investmentField.getText());
             double interestRate = Double.parseDouble(interestRateField.getText());
@@ -144,39 +163,37 @@ public class FutureValueFrame extends JFrame {
 
             NumberFormat currency = NumberFormat.getCurrencyInstance();
             futureValueField.setText(currency.format(futureValue));
-            
+
         } else { // THIS EXECUTES IF THERE ARE ERRORS
-            
+
             // Change the size to account for error labels
             setSize(new Dimension(620, 180));
-            
+
             // Reset the future value field
             futureValueField.setText("");
-            
-            
+
             /////// POPULATE ERROR FIELDS
-            
             // Investment 
             if (!v.isDouble(investmentField.getText(), "Monthly Investment").equals("")) {
-                if (!v.isPresent(investmentField.getText(), "Monthly Investment").equals("")){
+                if (!v.isPresent(investmentField.getText(), "Monthly Investment").equals("")) {
                     investmentErrorLabel.setText(v.isPresent(investmentField.getText(), "Monthly Investment"));
                 } else {
                     investmentErrorLabel.setText(v.isDouble(investmentField.getText(), "Monthly Investment"));
                 }
             }
-            
+
             // Interest Rate
             if (!v.isDouble(interestRateField.getText(), "Yearly Interest Rate").equals("")) {
-                if (!v.isPresent(interestRateField.getText(), "Yearly Interest Rate").equals("")){
+                if (!v.isPresent(interestRateField.getText(), "Yearly Interest Rate").equals("")) {
                     interestRateErrorLabel.setText(v.isPresent(interestRateField.getText(), "Yearly Interest Rate"));
                 } else {
                     interestRateErrorLabel.setText(v.isDouble(interestRateField.getText(), "Yearly Interest Rate"));
                 }
             }
-            
+
             // Years
             if (!v.isDouble(yearsField.getText(), "Years").equals("")) {
-                if (!v.isPresent(yearsField.getText(), "Years").equals("")){
+                if (!v.isPresent(yearsField.getText(), "Years").equals("")) {
                     yearsErrorLabel.setText(v.isPresent(yearsField.getText(), "Years"));
                 } else {
                     yearsErrorLabel.setText(v.isDouble(yearsField.getText(), "Years"));
