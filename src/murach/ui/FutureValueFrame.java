@@ -31,27 +31,29 @@ public class FutureValueFrame extends JFrame {
     private JLabel interestRateErrorLabel;
     private JLabel yearsErrorLabel;
     
-    // Declare Buttons
-    private JButton calculateButton;
-    private JButton exitButton;
-    
-    // Declare Panels
-    private JPanel buttonPanel;
-    private JPanel panel;
-
-    // Declare dim 
-    Dimension dim;
-    
-    
-    // New validation object
-    Validation v = new Validation();
-    
+    // Constructor which calls the initComponents method
     public FutureValueFrame() {
         initComponents();
     }
-
     
+    /**
+     * method used to initialize all the components of the application 
+     * and get it up and running
+     */
     private void initComponents() {
+        
+        // Declare Buttons
+        JButton calculateButton;
+        JButton exitButton;
+
+        // Declare Panels
+        JPanel buttonPanel;
+        JPanel panel;
+
+        // Declare dim 
+        Dimension dim;
+        
+        
         try {
             UIManager.setLookAndFeel(
                     UIManager.getSystemLookAndFeelClassName());
@@ -81,7 +83,6 @@ public class FutureValueFrame extends JFrame {
         calculateButton = new JButton("Calculate");
         exitButton = new JButton("Exit");
 
-        
         // Make so the future value field cannot be tampered with
         futureValueField.setEditable(false);
 
@@ -94,14 +95,18 @@ public class FutureValueFrame extends JFrame {
         interestRateField.setMinimumSize(dim);
         yearsField.setMinimumSize(dim);
         futureValueField.setMinimumSize(dim);
+        
+        // Set the preferred dimensions of the buttons
+        calculateButton.setPreferredSize(dim);
+        exitButton.setPreferredSize(dim);
 
         // Set button click listeners and point them at the appropriate methods
         calculateButton.addActionListener(e -> calculateButtonClicked());
         exitButton.addActionListener(e -> exitButtonClicked());
-
+        
         //Set up button panel and add the buttons to it
         buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         buttonPanel.add(calculateButton);
         buttonPanel.add(exitButton);
 
@@ -120,7 +125,9 @@ public class FutureValueFrame extends JFrame {
         panel.add(new JLabel("Future Value:"), getConstraints(0, 3));
         panel.add(futureValueField, getConstraints(1, 3));
 
-        add(panel, BorderLayout.CENTER);
+        
+        // ADD the panels to the Frame
+        add(panel, BorderLayout.WEST);
         add(buttonPanel, BorderLayout.SOUTH);
 
         setSize(new Dimension(320, 180));
@@ -137,13 +144,21 @@ public class FutureValueFrame extends JFrame {
         return c;
     }
 
-    // Method used to make calculations and populate the future value field
+    /**
+     * This method is the meat of the program. When the calculate button is 
+     * pressed, it resets error labels and the size of the frame,
+     * then it validates the data in the text fields. If the data is appropriate, 
+     * it calculates the future value, however, if the data is not appropriate, 
+     * it expands the frame and displays the appropriate error messages.
+     */
     private void calculateButtonClicked() {
         // RESET ERROR LABELS
         investmentErrorLabel.setText("");
         interestRateErrorLabel.setText("");
         yearsErrorLabel.setText("");
 
+        // New validation object
+        Validation v = new Validation();
 
         // If all data checks out, perform calculations
         if (v.isDouble(investmentField.getText(), "Monthly Investment").equals("")
@@ -167,7 +182,7 @@ public class FutureValueFrame extends JFrame {
         } else { // THIS EXECUTES IF THERE ARE ERRORS
 
             // Change the size to account for error labels
-            setSize(new Dimension(620, 180));
+            setSize(new Dimension(600, 180));
 
             // Reset the future value field
             futureValueField.setText("");
@@ -208,9 +223,13 @@ public class FutureValueFrame extends JFrame {
         System.exit(0);
     }
 
-    // MAIN method just needs to create a thread that creates the 
-    // FutureValueFrame object and adds it to the event queue that’s 
-    // used by the event dispatcher thread (EDT)
+    /**
+     * MAIN method just needs to create a thread that creates the 
+     * FutureValueFrame object and adds it to the event queue that’s 
+     * used by the event dispatcher thread (EDT)
+     * 
+     * @param args 
+     */
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(() -> {
             JFrame frame = new FutureValueFrame();
